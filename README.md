@@ -1,6 +1,6 @@
-﻿<div align="center">
+<div align="center">
 
-# ðŸš— Rental â€” Fleet & Asset Lease Management System
+# - Rental " Fleet & Asset Lease Management System
 
 ### *Automated Vehicle Reservations, Contract Agreements, & Maintenance Logs*
 
@@ -13,31 +13,31 @@
 
 </div>
 
-## ðŸ“Œ About Rental
+## " About Rental
 
 **Rental** is an enterprise fleet and equipment lease management application. It simplifies vehicle rental bookings, tracks unit availability calendars, automates legal lease agreements, and logs vehicle maintenance expenses.
 
 ---
 
-## âœ¨ Key Features
+##  Key Features
 
-### ðŸ“… 1. Availability Matrix & Booking Calendar
+### " 1. Availability Matrix & Booking Calendar
 - Real-time schedule calendar showing booked vs available vehicles.
 - Prevents double-booking conflicts across overlapping dates.
 - Hourly, Daily, and Monthly rental package options.
 
-### ðŸ“„ 2. Lease Contract & Invoice Generator
+### " 2. Lease Contract & Invoice Generator
 - Automatic PDF lease contract agreement generation with digital signature slot.
 - Itemized billing (Rental rate + Driver fee + Security deposit + Taxes).
 - Payment receipt issuance and overdue rental payment alerts.
 
-### ðŸ”§ 3. Vehicle Maintenance & Expense Log
+### " 3. Vehicle Maintenance & Expense Log
 - Schedule routine servicing, oil changes, and inspection dates.
 - Track maintenance costs per vehicle to analyze ROI and profitability.
 
 ---
 
-## ðŸš€ Installation & Setup
+##  Installation & Setup
 
 `ash
 git clone https://github.com/raphlv/rental.git
@@ -56,12 +56,12 @@ php artisan serve
 
 ---
 
-## ðŸ“ License & Author
+## " License & Author
 
 Distributed under the **MIT License**.
 
-ðŸ‘¤ **Author**: [Pangeran Ryan Pahlevi](https://github.com/raphlv)  
-âœ‰ï¸ **Email**: [pangeranryan080504@gmail.com](mailto:pangeranryan080504@gmail.com)  
+' **Author**: [Pangeran Ryan Pahlevi](https://github.com/raphlv)  
+ **Email**: [pangeranryan080504@gmail.com](mailto:pangeranryan080504@gmail.com)  
 
 ---
 <div align="center">
