@@ -1,8 +1,8 @@
 <div align="center">
 
-# - Rental " Fleet & Asset Lease Management System
+# Rental - Fleet and Asset Lease Management System
 
-### *Automated Vehicle Reservations, Contract Agreements, & Maintenance Logs*
+### *Automated Vehicle Reservations, Contract Agreements, and Maintenance Logs*
 
 ![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
@@ -13,31 +13,31 @@
 
 </div>
 
-## " About Rental
+## Overview
 
-**Rental** is an enterprise fleet and equipment lease management application. It simplifies vehicle rental bookings, tracks unit availability calendars, automates legal lease agreements, and logs vehicle maintenance expenses.
+Rental is an enterprise fleet and equipment lease management application. It simplifies vehicle rental bookings, tracks unit availability calendars, automates legal lease agreements, and logs vehicle maintenance expenses.
 
 ---
 
-##  Key Features
+## Key Features
 
-### " 1. Availability Matrix & Booking Calendar
+### 1. Availability Matrix and Booking Calendar
 - Real-time schedule calendar showing booked vs available vehicles.
 - Prevents double-booking conflicts across overlapping dates.
 - Hourly, Daily, and Monthly rental package options.
 
-### " 2. Lease Contract & Invoice Generator
+### 2. Lease Contract and Invoice Generator
 - Automatic PDF lease contract agreement generation with digital signature slot.
 - Itemized billing (Rental rate + Driver fee + Security deposit + Taxes).
 - Payment receipt issuance and overdue rental payment alerts.
 
-### " 3. Vehicle Maintenance & Expense Log
+### 3. Vehicle Maintenance and Expense Log
 - Schedule routine servicing, oil changes, and inspection dates.
 - Track maintenance costs per vehicle to analyze ROI and profitability.
 
 ---
 
-##  Installation & Setup
+## Installation and Setup
 
 `ash
 git clone https://github.com/raphlv/rental.git
@@ -56,14 +56,14 @@ php artisan serve
 
 ---
 
-## " License & Author
+## License and Author
 
-Distributed under the **MIT License**.
+Distributed under the MIT License.
 
-' **Author**: [Pangeran Ryan Pahlevi](https://github.com/raphlv)  
- **Email**: [pangeranryan080504@gmail.com](mailto:pangeranryan080504@gmail.com)  
+Author: Pangeran Ryan Pahlevi (https://github.com/raphlv)  
+Email: pangeranryan080504@gmail.com  
 
 ---
 <div align="center">
-  <sub>Automated Sync Enabled for Contribution Tracking | Last Updated: 2026-08-18 14:37:15</sub>
+  <sub>Automated Sync Enabled for Contribution Tracking | Last Updated: 2026-08-18 14:40:47</sub>
 </div>
