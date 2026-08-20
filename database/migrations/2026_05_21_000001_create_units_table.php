@@ -10,10 +10,12 @@ return new class extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('type', ['PS2', 'PS3', 'PS4', 'Nintendo Switch', 'TV 32 Inch']);
+            $table->string('code')->unique(); // e.g., PS3-01, PS4-15
+            $table->string('name'); // e.g., Unit 01 - PS3 Slim
+            $table->enum('type', ['PS 3', 'PS 4', 'PS 5', 'Nintendo Switch', 'TV Only'])->default('PS 4');
             $table->enum('status', ['ada', 'disewa', 'maintenance'])->default('ada');
-            $table->decimal('price_per_hour', 10, 2)->default(0.00);
+            $table->decimal('price_per_hour', 10, 2)->default(10000.00);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

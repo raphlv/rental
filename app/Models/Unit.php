@@ -10,10 +10,12 @@ class Unit extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'name',
         'type',
         'status',
-        'price_per_hour'
+        'price_per_hour',
+        'notes',
     ];
 
     public function rentals()
@@ -23,6 +25,6 @@ class Unit extends Model
 
     public function activeRental()
     {
-        return $this->hasOne(Rental::class)->where('status', 'active');
+        return $this->hasOne(Rental::class)->where('status', 'active')->latestOfMany();
     }
 }

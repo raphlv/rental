@@ -5,49 +5,65 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\Rental;
+use App\Models\Customer;
 
 class RentalDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedType = $request->query('type', 'All');
-        $validTypes = ['PS2', 'PS3', 'PS4', 'Nintendo Switch', 'TV 32 Inch'];
+        $selectedType = $request->query('type', 'Semua');
+        $validTypes = ['Semua', 'PS 3', 'PS 4', 'PS 5'];
 
-        // Get count stats
-        $stats = [
-            'total' => Unit::count(),
-            'ada' => Unit::where('status', 'ada')->count(),
-            'disewa' => Unit::where('status', 'disewa')->count(),
-            'maintenance' => Unit::where('status', 'maintenance')->count(),
+        // Total inventory stats
+        $totalUnitsCount = Unit::count();
+        $availableUnitsCount = Unit::where('status', 'ada')->count();
+        $rentedUnitsCount = Unit::where('status', 'disewa')->count();
+        $maintenanceUnitsCount = Unit::where('status', 'maintenance')->count();
+
+        // Breakdown stats per Console Type (PS 3: 30, PS 4: 30, PS 5: 10)
+        $ps3Stats = [
+            'total' => Unit::where('type', 'PS 3')->count(),
+            'ada' => Unit::where('type', 'PS 3')->where('status', 'ada')->count(),
+            'disewa' => Unit::where('type', 'PS 3')->where('status', 'disewa')->count(),
         ];
 
-        // Group stats per sheet type for visual summary
-        $typeStats = [];
-        foreach ($validTypes as $t) {
-            $typeStats[$t] = [
-                'total' => Unit::where('type', $t)->count(),
-                'ada' => Unit::where('type', $t)->where('status', 'ada')->count(),
-                'disewa' => Unit::where('type', $t)->where('status', 'disewa')->count(),
-                'maintenance' => Unit::where('type', $t)->where('status', 'maintenance')->count(),
-            ];
-        }
+        $ps4Stats = [
+            'total' => Unit::where('type', 'PS 4')->count(),
+            'ada' => Unit::where('type', 'PS 4')->where('status', 'ada')->count(),
+            'disewa' => Unit::where('type', 'PS 4')->where('status', 'disewa')->count(),
+        ];
 
-        // Fetch units for current "sheet"
-        $query = Unit::with('activeRental');
-        if (in_array($selectedType, $validTypes)) {
+        $ps5Stats = [
+            'total' => Unit::where('type', 'PS 5')->count(),
+            'ada' => Unit::where('type', 'PS 5')->where('status', 'ada')->count(),
+            'disewa' => Unit::where('type', 'PS 5')->where('status', 'disewa')->count(),
+        ];
+
+        // Fetch units for current sheet filter
+        $query = Unit::with(['activeRental', 'activeRental.customer']);
+        if ($selectedType !== 'Semua' && in_array($selectedType, ['PS 3', 'PS 4', 'PS 5'])) {
             $query->where('type', $selectedType);
         }
-        $units = $query->get();
+        $units = $query->orderBy('code', 'asc')->get();
 
-        return view('rental.dashboard', compact('units', 'selectedType', 'validTypes', 'stats', 'typeStats'));
-    }
+        // Available units for quick dropdown select in modal
+        $availableUnits = Unit::where('status', 'ada')->orderBy('code', 'asc')->get();
 
-    public function history(Request $request)
-    {
-        $rentals = Rental::with('unit')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        // Customer list for fast auto-complete in modal
+        $customers = Customer::orderBy('name', 'asc')->get();
 
-        return view('rental.history', compact('rentals'));
+        return view('rental.dashboard', compact(
+            'units',
+            'selectedType',
+            'totalUnitsCount',
+            'availableUnitsCount',
+            'rentedUnitsCount',
+            'maintenanceUnitsCount',
+            'ps3Stats',
+            'ps4Stats',
+            'ps5Stats',
+            'availableUnits',
+            'customers'
+        ));
     }
 }

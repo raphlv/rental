@@ -1,661 +1,611 @@
 @extends('rental.layout')
 
-@section('title', 'Dashboard')
+@section('title', 'Category 1 - Sheets Mendata Pelanggan')
 
 @section('styles')
 <style>
-    /* Stats grid */
-    .stats-grid {
+    /* Sheets Inventory Header Stats */
+    .stats-tally-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
         margin-bottom: 2rem;
     }
 
-    .stat-card {
+    .tally-card {
         background-color: var(--bg-card);
         border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 1.5rem;
         display: flex;
         align-items: center;
         gap: 1.25rem;
+        position: relative;
+        overflow: hidden;
         transition: var(--transition);
-        box-shadow: var(--shadow);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--primary);
+    .tally-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--border-highlight);
     }
 
-    .stat-icon {
-        padding: 1rem;
-        border-radius: 0.75rem;
+    .tally-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .tally-ps3::before { background: #3b82f6; }
+    .tally-ps4::before { background: #8b5cf6; }
+    .tally-ps5::before { background: #06b6d4; }
+    .tally-summary::before { background: #10b981; }
+
+    .tally-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-size: 1.5rem;
+        flex-shrink: 0;
     }
 
-    .stat-icon-total { background-color: rgba(139, 92, 246, 0.15); color: var(--primary); }
-    .stat-icon-ada { background-color: rgba(16, 185, 129, 0.15); color: var(--accent); }
-    .stat-icon-disewa { background-color: rgba(245, 158, 11, 0.15); color: var(--warning); }
-    .stat-icon-maint { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    .tally-ps3 .tally-icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .tally-ps4 .tally-icon { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+    .tally-ps5 .tally-icon { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .tally-summary .tally-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
-    .stat-info h3 {
-        font-size: 0.9rem;
+    .tally-info h4 {
+        font-family: var(--font-heading);
+        font-size: 1rem;
         color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        margin-bottom: 0.2rem;
     }
 
-    .stat-info p {
+    .tally-info .count-number {
+        font-family: var(--font-heading);
         font-size: 1.75rem;
         font-weight: 800;
-        margin-top: 0.25rem;
+        line-height: 1;
+        margin-bottom: 0.3rem;
     }
 
-    /* Tabs (Sheets) */
-    .sheets-header {
+    .tally-badges {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-pill-ada { color: #34d399; background: rgba(16, 185, 129, 0.12); padding: 0.15rem 0.5rem; border-radius: 12px; }
+    .badge-pill-disewa { color: #fbbf24; background: rgba(245, 158, 11, 0.12); padding: 0.15rem 0.5rem; border-radius: 12px; }
+
+    /* Category Filter bar */
+    .filter-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 1rem;
+        background-color: var(--bg-surface);
+        padding: 0.85rem 1.25rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
     }
 
-    .sheets-tabs {
+    .tab-pills {
         display: flex;
         gap: 0.5rem;
-        overflow-x: auto;
-        padding-bottom: 0.25rem;
     }
 
-    .sheet-tab {
-        padding: 0.6rem 1.25rem;
-        background-color: var(--bg-card);
-        border: 1px solid var(--border);
+    .tab-pill {
+        padding: 0.5rem 1.1rem;
+        border-radius: var(--radius-md);
         color: var(--text-muted);
         text-decoration: none;
-        border-radius: 0.75rem;
         font-weight: 600;
+        font-size: 0.85rem;
         transition: var(--transition);
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        border: 1px solid transparent;
     }
 
-    .sheet-tab:hover {
-        background-color: var(--bg-input);
+    .tab-pill:hover {
         color: var(--text-main);
+        background-color: var(--bg-card);
     }
 
-    .sheet-tab.active {
-        background: linear-gradient(135deg, var(--primary), #6d28d9);
-        color: var(--text-main);
-        border-color: var(--primary);
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    .tab-pill.active {
+        background-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
 
-    .sheet-tab .badge {
-        background-color: rgba(255, 255, 255, 0.2);
-        padding: 0.1rem 0.5rem;
-        border-radius: 0.5rem;
-        font-size: 0.75rem;
-    }
-
-    .sheet-actions {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    /* Grid of Units */
-    .units-grid {
+    /* Grid Sheets Cards */
+    .sheets-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
     }
 
     .unit-card {
         background-color: var(--bg-card);
         border: 1px solid var(--border);
-        border-radius: 1rem;
-        overflow: hidden;
-        transition: var(--transition);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         position: relative;
-        box-shadow: var(--shadow);
+        transition: var(--transition);
     }
 
     .unit-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
 
-    .unit-card.status-disewa {
-        border-color: rgba(245, 158, 11, 0.4);
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
-    }
-
-    .unit-card.status-maintenance {
-        border-color: rgba(239, 68, 68, 0.3);
-    }
+    .unit-card.status-ada { border-top: 4px solid var(--accent-emerald); }
+    .unit-card.status-disewa { border-top: 4px solid var(--accent-amber); }
+    .unit-card.status-maintenance { border-top: 4px solid var(--accent-rose); }
 
     .unit-header {
-        padding: 1.25rem;
-        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
+        margin-bottom: 0.85rem;
     }
 
-    .unit-title {
-        font-size: 1.2rem;
-        font-weight: 700;
+    .unit-code {
+        font-family: var(--font-heading);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
     }
 
-    .unit-type {
+    .status-tag {
         font-size: 0.75rem;
-        padding: 0.25rem 0.6rem;
-        background-color: var(--bg-input);
-        border-radius: 0.5rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        margin-top: 0.25rem;
-        display: inline-block;
-    }
-
-    .status-badge {
-        padding: 0.35rem 0.75rem;
-        border-radius: 2rem;
-        font-size: 0.8rem;
         font-weight: 700;
         text-transform: uppercase;
+        padding: 0.25rem 0.65rem;
+        border-radius: 20px;
         letter-spacing: 0.05em;
     }
 
-    .status-ada { background-color: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.3); }
-    .status-disewa { background-color: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .status-maintenance { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .tag-ada { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .tag-disewa { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .tag-maintenance { background-color: rgba(244, 63, 94, 0.15); color: #fb7185; }
 
     .unit-body {
-        padding: 1.25rem;
+        margin-bottom: 1.25rem;
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 1rem;
     }
 
-    .price-tag {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-
-    .price-tag span {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 400;
-    }
-
-    /* Rent details inside card */
-    .rent-details {
-        background-color: var(--bg-input);
-        border-radius: 0.75rem;
-        padding: 0.85rem;
-        border-left: 3px solid var(--warning);
+    .price-text {
         font-size: 0.9rem;
-    }
-
-    .rent-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.4rem;
-    }
-
-    .rent-row:last-child {
-        margin-bottom: 0;
-    }
-
-    .rent-label {
         color: var(--text-muted);
+        margin-bottom: 0.5rem;
     }
 
-    .rent-val {
-        font-weight: 600;
+    .price-amount {
+        color: var(--accent-cyan);
+        font-weight: 700;
+    }
+
+    /* Active Rental Info Inside Card */
+    .active-rental-box {
+        background-color: var(--bg-input);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        border-radius: var(--radius-md);
+        padding: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .customer-profile-strip {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .customer-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--accent-amber);
+    }
+
+    .customer-details-text h5 {
+        font-size: 0.9rem;
+        font-weight: 700;
         color: var(--text-main);
     }
 
-    .unit-actions {
-        padding: 1rem 1.25rem;
-        background-color: rgba(0,0,0,0.15);
-        border-top: 1px solid var(--border);
-        display: flex;
-        gap: 0.5rem;
-        justify-content: flex-end;
+    .customer-details-text p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
     }
 
-    /* Modal Styling */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
+    .timer-display {
+        background-color: #0b0f19;
+        border-radius: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--font-heading);
+        font-size: 0.85rem;
+    }
+
+    .timer-clock {
+        color: var(--accent-amber);
+        font-weight: 800;
+        font-size: 0.95rem;
+    }
+
+    /* Camera Box styling */
+    .camera-container {
+        position: relative;
         width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.75);
-        backdrop-filter: blur(5px);
+        height: 220px;
+        background-color: #000;
+        border-radius: var(--radius-md);
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
+        border: 1px dashed var(--border-highlight);
+        margin-top: 0.5rem;
     }
 
-    .modal.show {
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .modal-content {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 1.25rem;
+    #webcamVideo, #webcamCanvas {
         width: 100%;
-        max-width: 500px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        transform: translateY(-20px);
-        transition: transform 0.3s ease;
-        overflow: hidden;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .modal.show .modal-content {
-        transform: translateY(0);
+    #webcamCanvas {
+        display: none;
     }
 
-    .modal-header {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--border);
+    .camera-btn-overlay {
+        position: absolute;
+        bottom: 10px;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: rgba(0,0,0,0.1);
+        gap: 0.5rem;
     }
 
-    .modal-header h2 {
-        font-size: 1.3rem;
-        font-weight: 700;
+    /* Duration Selector Buttons */
+    .duration-buttons {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.4rem;
     }
 
-    .close-btn {
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        font-size: 1.5rem;
-        cursor: pointer;
-        transition: var(--transition);
-    }
-
-    .close-btn:hover {
-        color: var(--text-main);
-    }
-
-    .modal-body {
-        padding: 1.5rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
-
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-        color: var(--text-muted);
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
+    .duration-btn {
+        padding: 0.5rem 0.2rem;
         background-color: var(--bg-input);
         border: 1px solid var(--border);
-        border-radius: 0.75rem;
-        color: var(--text-main);
-        font-family: var(--font);
-        font-size: 0.95rem;
+        color: var(--text-muted);
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: center;
         transition: var(--transition);
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-    }
-
-    .modal-footer {
-        padding: 1rem 1.5rem;
-        border-top: 1px solid var(--border);
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-        background-color: rgba(0,0,0,0.1);
-    }
-
-    /* empty state */
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background-color: var(--bg-card);
-        border: 1px dashed var(--border);
-        border-radius: 1rem;
-        margin-top: 2rem;
-    }
-
-    .empty-state svg {
-        width: 64px;
-        height: 64px;
-        stroke: var(--text-muted);
-        margin-bottom: 1rem;
-    }
-
-    .empty-state h3 {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .empty-state p {
-        color: var(--text-muted);
+    .duration-btn:hover, .duration-btn.active {
+        background-color: var(--primary);
+        color: #fff;
+        border-color: var(--primary-hover);
     }
 </style>
 @endsection
 
 @section('content')
-<!-- Stats Bar -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-total">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+<!-- CATEGORY 1 HEADER BANNER & SHEETS TALLY COUNTERS -->
+<div class="stats-tally-grid">
+    <!-- PS 3 COUNTER: 30 UNITS -->
+    <div class="tally-card tally-ps3">
+        <div class="tally-icon">
+            <i class="fa-solid fa-gamepad"></i>
         </div>
-        <div class="stat-info">
-            <h3>Total Unit</h3>
-            <p>{{ $stats['total'] }}</p>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-ada">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </div>
-        <div class="stat-info">
-            <h3>Tersedia (Ada)</h3>
-            <p style="color: var(--accent);">{{ $stats['ada'] }}</p>
+        <div class="tally-info">
+            <h4>PS 3 (Total {{ $ps3Stats['total'] }} Unit)</h4>
+            <div class="count-number">{{ $ps3Stats['total'] }} Unit</div>
+            <div class="tally-badges">
+                <span class="badge-pill-ada"><i class="fa-solid fa-check"></i> {{ $ps3Stats['ada'] }} Ada</span>
+                <span class="badge-pill-disewa"><i class="fa-solid fa-play"></i> {{ $ps3Stats['disewa'] }} Disewa</span>
+            </div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-disewa">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+
+    <!-- PS 4 COUNTER: 30 UNITS -->
+    <div class="tally-card tally-ps4">
+        <div class="tally-icon">
+            <i class="fa-solid fa-gamepad"></i>
         </div>
-        <div class="stat-info">
-            <h3>Disewa</h3>
-            <p style="color: var(--warning);">{{ $stats['disewa'] }}</p>
+        <div class="tally-info">
+            <h4>PS 4 (Total {{ $ps4Stats['total'] }} Unit)</h4>
+            <div class="count-number">{{ $ps4Stats['total'] }} Unit</div>
+            <div class="tally-badges">
+                <span class="badge-pill-ada"><i class="fa-solid fa-check"></i> {{ $ps4Stats['ada'] }} Ada</span>
+                <span class="badge-pill-disewa"><i class="fa-solid fa-play"></i> {{ $ps4Stats['disewa'] }} Disewa</span>
+            </div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-maint">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+
+    <!-- PS 5 COUNTER -->
+    <div class="tally-card tally-ps5">
+        <div class="tally-icon">
+            <i class="fa-solid fa-bolt"></i>
         </div>
-        <div class="stat-info">
-            <h3>Maintenance</h3>
-            <p style="color: var(--danger);">{{ $stats['maintenance'] }}</p>
+        <div class="tally-info">
+            <h4>PS 5 (Total {{ $ps5Stats['total'] }} Unit)</h4>
+            <div class="count-number">{{ $ps5Stats['total'] }} Unit</div>
+            <div class="tally-badges">
+                <span class="badge-pill-ada"><i class="fa-solid fa-check"></i> {{ $ps5Stats['ada'] }} Ada</span>
+                <span class="badge-pill-disewa"><i class="fa-solid fa-play"></i> {{ $ps5Stats['disewa'] }} Disewa</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERALL SUMMARY -->
+    <div class="tally-card tally-summary">
+        <div class="tally-icon">
+            <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div class="tally-info">
+            <h4>Total Inventaris Unit</h4>
+            <div class="count-number">{{ $totalUnitsCount }} Unit</div>
+            <div class="tally-badges">
+                <span class="badge-pill-ada">{{ $availableUnitsCount }} Siap Rent</span>
+                <span class="badge-pill-disewa">{{ $rentedUnitsCount }} Aktif</span>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Sheets Navigation Header -->
-<div class="sheets-header">
-    <div class="sheets-tabs">
-        <a href="{{ route('dashboard', ['type' => 'All']) }}" class="sheet-tab {{ $selectedType === 'All' ? 'active' : '' }}">
-            Semua
-            <span class="badge">{{ $stats['total'] }}</span>
+<!-- FILTER SHEET TABS & ACTION BUTTON -->
+<div class="filter-bar">
+    <div class="tab-pills">
+        <a href="{{ route('sheets', ['type' => 'Semua']) }}" class="tab-pill {{ $selectedType === 'Semua' ? 'active' : '' }}">
+            <i class="fa-solid fa-layer-group"></i> Semua Console ({{ $totalUnitsCount }})
         </a>
-        @foreach($validTypes as $type)
-            <a href="{{ route('dashboard', ['type' => $type]) }}" class="sheet-tab {{ $selectedType === $type ? 'active' : '' }}">
-                {{ $type }}
-                <span class="badge">{{ $typeStats[$type]['total'] }}</span>
-            </a>
-        @endforeach
+        <a href="{{ route('sheets', ['type' => 'PS 3']) }}" class="tab-pill {{ $selectedType === 'PS 3' ? 'active' : '' }}">
+            <i class="fa-solid fa-gamepad"></i> PS 3 (30 Unit)
+        </a>
+        <a href="{{ route('sheets', ['type' => 'PS 4']) }}" class="tab-pill {{ $selectedType === 'PS 4' ? 'active' : '' }}">
+            <i class="fa-solid fa-gamepad"></i> PS 4 (30 Unit)
+        </a>
+        <a href="{{ route('sheets', ['type' => 'PS 5']) }}" class="tab-pill {{ $selectedType === 'PS 5' ? 'active' : '' }}">
+            <i class="fa-solid fa-bolt"></i> PS 5 (10 Unit)
+        </a>
     </div>
-    
-    <div class="sheet-actions">
-        @if($selectedType !== 'All')
-            <form action="{{ route('units.reset', $selectedType) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membalikkan semua data di tab {{ $selectedType }} ke data default?')">
-                @csrf
-                <button type="submit" class="btn btn-secondary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-                    Default Sheet
-                </button>
-            </form>
-        @endif
-        <button onclick="openModal('addUnitModal')" class="btn btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Tambah Unit
+
+    <div>
+        <button class="btn-custom btn-primary-custom" onclick="openStartRentalModal()">
+            <i class="fa-solid fa-plus-circle"></i> Mendata Pelanggan / Sewa Baru
         </button>
     </div>
 </div>
 
-<!-- Units Grid -->
-@if($units->isEmpty())
-    <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="8" y1="12" x2="16" y2="12"></line>
-        </svg>
-        <h3>Tidak Ada Unit</h3>
-        <p>Belum ada unit terdaftar di kategori {{ $selectedType }}. Silakan tambah unit baru.</p>
-    </div>
-@else
-    <div class="units-grid">
-        @foreach($units as $unit)
-            <div class="unit-card status-{{ $unit->status }}">
-                <div class="unit-header">
-                    <div>
-                        <h4 class="unit-title">{{ $unit->name }}</h4>
-                        <span class="unit-type">{{ $unit->type }}</span>
-                    </div>
-                    <span class="status-badge status-{{ $unit->status }}">
-                        {{ $unit->status === 'ada' ? 'Tersedia' : ($unit->status === 'disewa' ? 'Disewa' : 'Maint.') }}
-                    </span>
-                </div>
-                
-                <div class="unit-body">
-                    <div class="price-tag">
-                        Rp {{ number_format($unit->price_per_hour, 0, ',', '.') }}<span>/jam</span>
-                    </div>
+<!-- INVENTORY GRID SHEETS -->
+<div class="sheets-grid">
+    @forelse($units as $unit)
+        <div class="unit-card status-{{ $unit->status }}">
+            <div class="unit-header">
+                <span class="unit-code">{{ $unit->code }}</span>
+                <span class="status-tag tag-{{ $unit->status }}">
+                    @if($unit->status === 'ada') <i class="fa-solid fa-circle-check"></i> Ada
+                    @elseif($unit->status === 'disewa') <i class="fa-solid fa-spinner fa-spin"></i> Disewa
+                    @else <i class="fa-solid fa-wrench"></i> Servis
+                    @endif
+                </span>
+            </div>
 
-                    @if($unit->status === 'disewa' && $unit->activeRental)
-                        <div class="rent-details">
-                            <div class="rent-row">
-                                <span class="rent-label">Penyewa:</span>
-                                <span class="rent-val">{{ $unit->activeRental->customer_name }}</span>
-                            </div>
-                            <div class="rent-row">
-                                <span class="rent-label">Durasi:</span>
-                                <span class="rent-val">{{ $unit->activeRental->duration }} Jam</span>
-                            </div>
-                            <div class="rent-row">
-                                <span class="rent-label">Metode:</span>
-                                <span class="rent-val">{{ $unit->activeRental->payment_method }}</span>
-                            </div>
-                            <div class="rent-row">
-                                <span class="rent-label">Selesai:</span>
-                                <span class="rent-val text-warning">{{ $unit->activeRental->end_time->format('H:i d M') }}</span>
+            <div class="unit-body">
+                <div class="price-text">
+                    {{ $unit->name }} &bull; <span class="price-amount">Rp {{ number_format($unit->price_per_hour, 0, ',', '.') }}/jam</span>
+                </div>
+
+                @if($unit->status === 'disewa' && $unit->activeRental)
+                    <div class="active-rental-box">
+                        <div class="customer-profile-strip">
+                            <img src="{{ $unit->activeRental->photo_url }}" alt="Foto Pelanggan" class="customer-avatar">
+                            <div class="customer-details-text">
+                                <h5>{{ $unit->activeRental->customer_name }}</h5>
+                                <p><i class="fa-solid fa-phone"></i> {{ $unit->activeRental->customer_phone ?? '-' }}</p>
                             </div>
                         </div>
-                    @endif
-                </div>
 
-                <div class="unit-actions">
-                    @if($unit->status === 'ada')
-                        <button onclick="openRentModal({{ json_encode($unit) }})" class="btn btn-accent btn-sm">Mulai Sewa</button>
-                        <button onclick="openEditModal({{ json_encode($unit) }})" class="btn btn-secondary btn-sm">Edit</button>
-                    @elseif($unit->status === 'disewa' && $unit->activeRental)
-                        <form action="{{ route('rentals.complete', $unit->activeRental->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-primary btn-sm">Selesai Sewa</button>
-                        </form>
-                    @elseif($unit->status === 'maintenance')
-                        <form action="{{ route('units.update', $unit->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <input type="hidden" name="name" value="{{ $unit->name }}">
-                            <input type="hidden" name="type" value="{{ $unit->type }}">
-                            <input type="hidden" name="price_per_hour" value="{{ $unit->price_per_hour }}">
-                            <input type="hidden" name="status" value="ada">
-                            <button type="submit" class="btn btn-accent btn-sm">Selesai Maint.</button>
-                        </form>
-                        <button onclick="openEditModal({{ json_encode($unit) }})" class="btn btn-secondary btn-sm">Edit</button>
-                    @endif
+                        <div class="timer-display">
+                            <span>Sisa Waktu:</span>
+                            <span class="timer-clock" data-endtime="{{ $unit->activeRental->end_time->toIso8601String() }}" id="timer-{{ $unit->activeRental->id }}">
+                                00:00:00
+                            </span>
+                        </div>
+                    </div>
+                @elseif($unit->status === 'ada')
+                    <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem;">
+                        <i class="fa-solid fa-circle-info"></i> Unit siap digunakan untuk sewa pelanggan baru.
+                    </p>
+                @else
+                    <p style="font-size: 0.85rem; color: var(--accent-rose); margin-top: 0.5rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Dalam proses perawatan/maintenance.
+                    </p>
+                @endif
+            </div>
 
-                    <form action="{{ route('units.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit {{ $unit->name }}? Semua riwayat sewa unit ini akan ikut terhapus.')" style="display:inline;">
+            <div class="unit-footer">
+                @if($unit->status === 'ada')
+                    <button class="btn-custom btn-success-custom btn-sm" style="width: 100%;" onclick="openStartRentalModal({{ $unit->id }}, '{{ $unit->code }}', {{ $unit->price_per_hour }})">
+                        <i class="fa-solid fa-play"></i> Sewa Unit Ini
+                    </button>
+                @elseif($unit->status === 'disewa' && $unit->activeRental)
+                    <form action="{{ route('rentals.complete', $unit->activeRental->id) }}" method="POST" onsubmit="return confirm('Apakah rental unit {{ $unit->code }} ini sudah selesai?')">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                        <button type="submit" class="btn-custom btn-primary-custom btn-sm" style="width: 100%;">
+                            <i class="fa-solid fa-flag-checkered"></i> Selesai & Kembalikan
+                        </button>
                     </form>
-                </div>
+                @else
+                    <button class="btn-custom btn-secondary-custom btn-sm" style="width: 100%;" disabled>
+                        <i class="fa-solid fa-ban"></i> Tidak Tersedia
+                    </button>
+                @endif
             </div>
-        @endforeach
-    </div>
-@endif
-
-<!-- Add Unit Modal -->
-<div id="addUnitModal" class="modal">
-    <div class="modal-content">
-        <form action="{{ route('units.store') }}" method="POST">
-            @csrf
-            <div class="modal-header">
-                <h2>Tambah Unit Baru</h2>
-                <button type="button" class="close-btn" onclick="closeModal('addUnitModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="name">Nama Unit</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="Contoh: PS4 - Unit 04" required>
-                </div>
-                <div class="form-group">
-                    <label for="type">Kategori (Sheet)</label>
-                    <select id="type" name="type" class="form-control" required>
-                        @foreach($validTypes as $type)
-                            <option value="{{ $type }}" {{ $selectedType === $type ? 'selected' : '' }}>{{ $type }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="price_per_hour">Harga Sewa per Jam (Rupiah)</label>
-                    <input type="number" id="price_per_hour" name="price_per_hour" class="form-control" placeholder="Contoh: 8000" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="status">Status Awal</label>
-                    <select id="status" name="status" class="form-control" required>
-                        <option value="ada">Tersedia (Ada)</option>
-                        <option value="maintenance">Maintenance</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('addUnitModal')">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
-        </form>
-    </div>
+        </div>
+    @empty
+        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background-color: var(--bg-card); border-radius: var(--radius-lg);">
+            <i class="fa-solid fa-gamepad fa-3x" style="color: var(--text-dim); margin-bottom: 1rem;"></i>
+            <h3>Tidak Ada Unit PlayStation Ditemukan</h3>
+            <p style="color: var(--text-muted);">Belum ada unit yang terdaftar pada kategori sheet ini.</p>
+        </div>
+    @endforelse
 </div>
 
-<!-- Edit Unit Modal -->
-<div id="editUnitModal" class="modal">
-    <div class="modal-content">
-        <form id="editUnitForm" method="POST">
-            @csrf
-            <div class="modal-header">
-                <h2>Edit Unit</h2>
-                <button type="button" class="close-btn" onclick="closeModal('editUnitModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="edit_name">Nama Unit</label>
-                    <input type="text" id="edit_name" name="name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_type">Kategori</label>
-                    <select id="edit_type" name="type" class="form-control" required>
-                        @foreach($validTypes as $type)
-                            <option value="{{ $type }}">{{ $type }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit_price_per_hour">Harga Sewa per Jam</label>
-                    <input type="number" id="edit_price_per_hour" name="price_per_hour" class="form-control" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit_status">Status</label>
-                    <select id="edit_status" name="status" class="form-control" required>
-                        <option value="ada">Tersedia (Ada)</option>
-                        <option value="disewa">Disewa</option>
-                        <option value="maintenance">Maintenance</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('editUnitModal')">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Start Rent Modal -->
-<div id="rentModal" class="modal">
-    <div class="modal-content">
+<!-- MODAL mendata PELANGGAN / SEWA PS BARU -->
+<div class="modal-overlay" id="startRentalModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Mendata Pelanggan / Sewa PlayStation</h3>
+            <button class="modal-close" onclick="closeStartRentalModal()">&times;</button>
+        </div>
         <form action="{{ route('rentals.start') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <input type="hidden" id="rent_unit_id" name="unit_id">
-            <div class="modal-header">
-                <h2>Mulai Rental - <span id="rent_unit_name" style="color: var(--primary);"></span></h2>
-                <button type="button" class="close-btn" onclick="closeModal('rentModal')">&times;</button>
-            </div>
             <div class="modal-body">
+                <!-- Select Unit -->
                 <div class="form-group">
-                    <label for="customer_name">Nama Penyewa</label>
-                    <input type="text" id="customer_name" name="customer_name" class="form-control" placeholder="Nama lengkap penyewa" required>
-                </div>
-                <div class="form-group">
-                    <label for="duration">Durasi Sewa (Jam)</label>
-                    <input type="number" id="duration" name="duration" class="form-control" placeholder="Contoh: 3" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label for="payment_method">Metode Pembayaran</label>
-                    <select id="payment_method" name="payment_method" class="form-control" required>
-                        <option value="Cash">Cash</option>
-                        <option value="Transfer">Transfer Bank</option>
-                        <option value="QRIS">QRIS</option>
+                    <label class="form-label"><i class="fa-solid fa-tv"></i> Pilih Unit PlayStation</label>
+                    <select name="unit_id" id="modal_unit_id" class="form-select" required onchange="updateModalPrice()">
+                        <option value="">-- Pilih Unit Tersedia --</option>
+                        @foreach($availableUnits as $avail)
+                            <option value="{{ $avail->id }}" data-price="{{ $avail->price_per_hour }}">
+                                {{ $avail->code }} - {{ $avail->name }} (Rp {{ number_format($avail->price_per_hour, 0, ',', '.') }}/jam)
+                            </option>
+                        @endforeach
                     </select>
                 </div>
+
+                <!-- Customer Mode Toggle -->
                 <div class="form-group">
-                    <label for="photo_proof">Bukti Foto Penerimaan Barang</label>
-                    <input type="file" id="photo_proof" name="photo_proof" class="form-control" accept="image/*" required>
-                    <small style="color: var(--text-muted); display: block; margin-top: 0.25rem;">Upload foto penerimaan barang/bukti pembayaran (Max 5MB)</small>
+                    <label class="form-label"><i class="fa-solid fa-users"></i> Pilihan Pelanggan</label>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.3rem;">
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; cursor: pointer;">
+                            <input type="radio" name="customer_selection" value="existing" onclick="toggleCustomerMode('existing')" checked> Pelanggan Terdaftar
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; cursor: pointer;">
+                            <input type="radio" name="customer_selection" value="new" onclick="toggleCustomerMode('new')"> Pelanggan Baru / Walk-in
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Existing Customer Dropdown -->
+                <div class="form-group" id="existing_customer_group">
+                    <label class="form-label">Pilih Pelanggan</label>
+                    <select name="customer_id" class="form-select">
+                        <option value="">-- Pilih dari Database Pelanggan --</option>
+                        @foreach($customers as $c)
+                            <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->phone ?? 'No Phone' }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- New Customer Inputs & Photo Capture (File Upload OR Live Camera) -->
+                <div id="new_customer_group" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Nama Pelanggan</label>
+                        <input type="text" name="customer_name" class="form-control" placeholder="Nama Lengkap">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">No. Telepon / WhatsApp</label>
+                        <input type="text" name="customer_phone" class="form-control" placeholder="Contoh: 081234567890">
+                    </div>
+                </div>
+
+                <!-- PHOTO MODULE: File Upload OR Live Webcam Snapshot -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-camera"></i> Foto Pelanggan (File ATAU Kamera)</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <label style="cursor: pointer;"><input type="radio" name="photo_mode" value="file" onclick="togglePhotoMode('file')" checked> Upload Berkas File</label>
+                        <label style="cursor: pointer;"><input type="radio" name="photo_mode" value="camera" onclick="togglePhotoMode('camera')"> Ambil Foto Kamera (Webcam)</label>
+                    </div>
+
+                    <!-- File upload input -->
+                    <div id="photo_file_box">
+                        <input type="file" name="photo_file" accept="image/*" class="form-control">
+                    </div>
+
+                    <!-- Live Camera Webcam Box -->
+                    <div id="photo_camera_box" style="display: none;">
+                        <div class="camera-container">
+                            <video id="webcamVideo" autoplay playsinline></video>
+                            <canvas id="webcamCanvas"></canvas>
+                            <div class="camera-btn-overlay">
+                                <button type="button" class="btn-custom btn-primary-custom btn-sm" id="btnSnapPhoto" onclick="takeWebcamSnapshot()">
+                                    <i class="fa-solid fa-camera"></i> Jepret Foto
+                                </button>
+                                <button type="button" class="btn-custom btn-secondary-custom btn-sm" id="btnRetakePhoto" onclick="retakeWebcamPhoto()" style="display: none;">
+                                    <i class="fa-solid fa-rotate-left"></i> Foto Ulang
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="photo_camera" id="photo_camera_input">
+                    </div>
+                </div>
+
+                <!-- Duration Picker -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-clock"></i> Durasi Sewa (Jam)</label>
+                    <div class="duration-buttons">
+                        <button type="button" class="duration-btn active" onclick="setDuration(1)">1 Jam</button>
+                        <button type="button" class="duration-btn" onclick="setDuration(2)">2 Jam</button>
+                        <button type="button" class="duration-btn" onclick="setDuration(3)">3 Jam</button>
+                        <button type="button" class="duration-btn" onclick="setDuration(4)">4 Jam</button>
+                        <button type="button" class="duration-btn" onclick="setDuration(5)">5 Jam</button>
+                    </div>
+                    <input type="number" name="duration_hours" id="duration_hours" class="form-control" value="1" min="0.5" step="0.5" style="margin-top: 0.5rem;" oninput="updateModalPrice()" required>
+                </div>
+
+                <!-- Payment Method & Total Calculator -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Metode Pembayaran</label>
+                        <select name="payment_method" class="form-select" required>
+                            <option value="Cash">Cash (Tunai)</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="Transfer">Transfer Bank</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status Pembayaran</label>
+                        <select name="payment_status" class="form-select" required>
+                            <option value="Lunas">Lunas</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="background-color: var(--bg-input); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-highlight);">
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Total Biaya Rental:</span>
+                    <h3 id="modal_total_price" style="font-family: var(--font-heading); color: var(--accent-cyan); font-size: 1.5rem;">Rp 0</h3>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('rentModal')">Batal</button>
-                <button type="submit" class="btn btn-accent">Mulai Sewa</button>
+
+            <div class="modal-header" style="border-top: 1px solid var(--border); border-bottom: none; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn-custom btn-secondary-custom" onclick="closeStartRentalModal()">Batal</button>
+                <button type="submit" class="btn-custom btn-success-custom"><i class="fa-solid fa-check-circle"></i> Mulai Rental Sekarang</button>
             </div>
         </form>
     </div>
@@ -664,38 +614,155 @@
 
 @section('scripts')
 <script>
-    function openModal(id) {
-        document.getElementById(id).classList.add('show');
+    let currentStream = null;
+
+    // Countdown Timers for Active Rentals
+    function initCountdownTimers() {
+        const timerElements = document.querySelectorAll('.timer-clock');
+        timerElements.forEach(el => {
+            const endTimeStr = el.getAttribute('data-endtime');
+            if (!endTimeStr) return;
+            const endTime = new Date(endTimeStr).getTime();
+
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    el.innerHTML = '<span style="color: var(--accent-rose);"><i class="fa-solid fa-bell"></i> WAKTU HABIS!</span>';
+                    return;
+                }
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const hStr = String(hours).padStart(2, '0');
+                const mStr = String(minutes).padStart(2, '0');
+                const sStr = String(seconds).padStart(2, '0');
+
+                el.innerHTML = `<i class="fa-solid fa-clock"></i> ${hStr}:${mStr}:${sStr}`;
+            };
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        });
     }
 
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('show');
+    // Modal Handlers
+    function openStartRentalModal(unitId = null, unitCode = '', price = 0) {
+        document.getElementById('startRentalModal').classList.add('active');
+        if (unitId) {
+            document.getElementById('modal_unit_id').value = unitId;
+        }
+        updateModalPrice();
     }
 
-    function openEditModal(unit) {
-        document.getElementById('edit_name').value = unit.name;
-        document.getElementById('edit_type').value = unit.type;
-        document.getElementById('edit_price_per_hour').value = Math.round(unit.price_per_hour);
-        document.getElementById('edit_status').value = unit.status;
-        
-        // Update form action dynamically
-        const form = document.getElementById('editUnitForm');
-        form.action = `/rental/public/units/update/${unit.id}`;
-        
-        openModal('editUnitModal');
+    function closeStartRentalModal() {
+        document.getElementById('startRentalModal').classList.remove('active');
+        stopWebcamStream();
     }
 
-    function openRentModal(unit) {
-        document.getElementById('rent_unit_id').value = unit.id;
-        document.getElementById('rent_unit_name').innerText = unit.name;
-        openModal('rentModal');
-    }
-
-    // Close modal when clicking outside content
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.remove('show');
+    function toggleCustomerMode(mode) {
+        const existingGroup = document.getElementById('existing_customer_group');
+        const newGroup = document.getElementById('new_customer_group');
+        if (mode === 'existing') {
+            existingGroup.style.display = 'block';
+            newGroup.style.display = 'none';
+        } else {
+            existingGroup.style.display = 'none';
+            newGroup.style.display = 'block';
         }
     }
+
+    function togglePhotoMode(mode) {
+        const fileBox = document.getElementById('photo_file_box');
+        const cameraBox = document.getElementById('photo_camera_box');
+        if (mode === 'file') {
+            fileBox.style.display = 'block';
+            cameraBox.style.display = 'none';
+            stopWebcamStream();
+        } else {
+            fileBox.style.display = 'none';
+            cameraBox.style.display = 'block';
+            startWebcamStream();
+        }
+    }
+
+    function startWebcamStream() {
+        const video = document.getElementById('webcamVideo');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    currentStream = stream;
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    document.getElementById('webcamCanvas').style.display = 'none';
+                    document.getElementById('btnSnapPhoto').style.display = 'inline-flex';
+                    document.getElementById('btnRetakePhoto').style.display = 'none';
+                })
+                .catch(err => {
+                    alert('Gagal mengakses kamera/webcam: ' + err.message);
+                });
+        } else {
+            alert('Browser Anda tidak mendukung fitur Webcam API.');
+        }
+    }
+
+    function stopWebcamStream() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+    }
+
+    function takeWebcamSnapshot() {
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('webcamCanvas');
+        const input = document.getElementById('photo_camera_input');
+
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        input.value = dataUrl;
+
+        video.style.display = 'none';
+        canvas.style.display = 'block';
+        document.getElementById('btnSnapPhoto').style.display = 'none';
+        document.getElementById('btnRetakePhoto').style.display = 'inline-flex';
+    }
+
+    function retakeWebcamPhoto() {
+        document.getElementById('photo_camera_input').value = '';
+        document.getElementById('webcamVideo').style.display = 'block';
+        document.getElementById('webcamCanvas').style.display = 'none';
+        document.getElementById('btnSnapPhoto').style.display = 'inline-flex';
+        document.getElementById('btnRetakePhoto').style.display = 'none';
+    }
+
+    function setDuration(hours) {
+        document.getElementById('duration_hours').value = hours;
+        const buttons = document.querySelectorAll('.duration-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        updateModalPrice();
+    }
+
+    function updateModalPrice() {
+        const unitSelect = document.getElementById('modal_unit_id');
+        const selectedOpt = unitSelect.options[unitSelect.selectedIndex];
+        const pricePerHour = selectedOpt ? parseFloat(selectedOpt.getAttribute('data-price') || 0) : 0;
+        const duration = parseFloat(document.getElementById('duration_hours').value || 0);
+
+        const total = pricePerHour * duration;
+        document.getElementById('modal_total_price').innerText = 'Rp ' + total.toLocaleString('id-ID');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCountdownTimers();
+    });
 </script>
 @endsection
