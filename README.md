@@ -18,5 +18,36 @@ Fleet management and car/motorcycle rental booking software with driver assignme
 
 ---
 
+## Key Features
+
+- Fleet Schedule Calendar: Real-time availability visualizer preventing overlapping vehicle bookings.
+- Driver Assignment Module: Assigns in-house drivers based on trip routes and shift schedules.
+- Maintenance & Service Logs: Tracks odometer mileage, oil change schedules, and repair expenses.
+- Automated Invoicing: Generates itemized rental invoices with deposit records and printable PDF receipts.
+
+---
+
+## Technology Stack
+
+- Backend: Laravel 10 (PHP 8.2)
+- Database: MySQL 8.0
+- Frontend: Blade Templates and Bootstrap 5
+
+---
+
+## Getting Started
+
+`ash
+git clone https://github.com/raphlv/rental.git
+cd rental
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+`
+
+---
+
 ## Developer and Maintainer
 Pangeran Ryan Pahlevi - https://pangeranryan.vercel.app
