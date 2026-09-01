@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-# ðŸš— Vehicle Rental Management â€” Fleet & Booking Automation
+# Vehicle Rental Management â€” Fleet & Booking Automation
 
 ### *Fleet Availability Scheduler, Dynamic Daily Tariff, & Customer Invoicing*
 
@@ -12,9 +12,14 @@
 
 </div>
 
-## ðŸ“Œ About The Project
+## About The Project
 
 Fleet management and car/motorcycle rental booking software with driver assignment, rental duration calculator, maintenance history tracking, and printable PDF invoices.
 
-<!-- Last verified & polished: 2026-09-01 13:08:36 by Pangeran Ryan Pahlevi -->
+---
+
+## Developer and Maintainer
+Pangeran Ryan Pahlevi â€” https://pangeranryan.vercel.app
+
+<!-- Last verified: 2026-09-01 13:10:43 by Pangeran Ryan Pahlevi -->
 
