@@ -1,80 +1,20 @@
 ﻿<div align="center">
 
-# Rental - Fleet and Asset Lease Management System
+# ðŸš— Vehicle Rental Management â€” Fleet & Booking Automation
 
-### *Automated Vehicle Reservations, Contract Agreements, and Maintenance Logs*
+### *Fleet Availability Scheduler, Dynamic Daily Tariff, & Customer Invoicing*
 
 ![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ---
 
 </div>
 
-## Overview
+## ðŸ“Œ About The Project
 
-Rental is an enterprise fleet and equipment lease management application. It simplifies vehicle rental bookings, tracks unit availability calendars, automates legal lease agreements, and logs vehicle maintenance expenses.
+Fleet management and car/motorcycle rental booking software with driver assignment, rental duration calculator, maintenance history tracking, and printable PDF invoices.
 
----
-
-## Key Features
-
-### 1. Availability Matrix and Booking Calendar
-- Real-time schedule calendar showing booked vs available vehicles.
-- Prevents double-booking conflicts across overlapping dates.
-- Hourly, Daily, and Monthly rental package options.
-
-### 2. Lease Contract and Invoice Generator
-- Automatic PDF lease contract agreement generation with digital signature slot.
-- Itemized billing (Rental rate + Driver fee + Security deposit + Taxes).
-- Payment receipt issuance and overdue rental payment alerts.
-
-### 3. Vehicle Maintenance and Expense Log
-- Schedule routine servicing, oil changes, and inspection dates.
-- Track maintenance costs per vehicle to analyze ROI and profitability.
-
----
-
-## Installation and Setup
-
-`ash
-git clone https://github.com/raphlv/rental.git
-cd rental
-
-composer install
-npm install && npm run build
-
-cp .env.example .env
-php artisan key:generate
-
-# Import rental_db.sql into MySQL or run artisan migrate:
-php artisan migrate --seed
-php artisan serve
-`
-
----
-
-## Recent Updates
-- Integrated Customer Management and Verification
-- Added Rental Transaction History and Unit Tracking
-- Enhanced Availability Matrix and Dashboard Analytics
-
----
-
-## License and Author
-
-Distributed under the MIT License.
-
-Author: Pangeran Ryan Pahlevi (https://github.com/raphlv)  
-Email: pangeranryan080504@gmail.com  
-
----
-<div align="center">
-  <sub>Automated Sync Enabled for Contribution Tracking | Last Updated: 2026-08-20 11:43:00</sub>
-</div>
-
-<!-- Last updated: 2026-09-01 13:06:26 -->
-
+<!-- Last verified & polished: 2026-09-01 13:08:36 by Pangeran Ryan Pahlevi -->
 
